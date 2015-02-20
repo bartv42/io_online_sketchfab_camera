@@ -146,7 +146,7 @@ def writescript(filename,c):
     ixScript.write("        setTimeout( loop, 50 );\n")
     
     # animation loop
-    ixScript.write("        if( currentCamera >= %d ) {\n" %endframe-1 )
+    ixScript.write("        if( currentCamera >= %d ) {\n" %(endframe-1) )
     ixScript.write("            currentCamera = 0;\n")
     ixScript.write("        }\n")
     
