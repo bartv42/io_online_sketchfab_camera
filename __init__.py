@@ -71,6 +71,10 @@ def writeCameras(context, filepath, frame_start, frame_end, scaling_factor):
     c["roty"]={}
     c["rotz"]={}
 
+    c["targetx"]={}
+    c["targety"]={}
+    c["targetz"]={}
+
 #Frame based object settings
     for f in frame_range:
         scene.frame_set(f)
@@ -83,6 +87,13 @@ def writeCameras(context, filepath, frame_start, frame_end, scaling_factor):
         c["roty"][f]=(obj.rotation_euler[2]*180/pi)
         c["rotz"][f]=-1*(obj.rotation_euler[1]*180/pi)
 
+        dir =  mathutils.Vector((0, 0, -1)) * obj.matrix_world
+
+        c["targetx"][f]=dir[0]
+        c["targety"][f]=dir[1]
+        c["targetz"][f]=dir[2]
+
+  
     writescript(filepath,c)
     return
 
@@ -131,6 +142,11 @@ def writescript(filename,c):
         ixScript.write(' %f, ' %c["posz"][frame])
         ixScript.write(' %f ] ' %c["posy"][frame])
 
+        ixScript.write(', target: [ %f, ' %c["targetx"][frame] )
+        ixScript.write(' %f, ' %c["targety"][frame])
+        ixScript.write(' %f ] ' %c["targetz"][frame])
+
+
         if frame == endframe:
             ixScript.write(' }] \n')
         else:
@@ -142,7 +158,7 @@ def writescript(filename,c):
 
     ixScript.write("    var loop = function () {\n")
     ixScript.write("        currentCamera++;\n")
-    ixScript.write("        api.lookat( cameraList[ currentCamera ].eye, target, 0.01 );\n")
+    ixScript.write("        api.lookat( cameraList[ currentCamera ].eye, cameraList[ currentCamera ].target, 0.01 );\n")
     ixScript.write("        setTimeout( loop, 50 );\n")
     
     # animation loop
