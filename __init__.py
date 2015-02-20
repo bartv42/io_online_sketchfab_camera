@@ -87,11 +87,11 @@ def writeCameras(context, filepath, frame_start, frame_end, scaling_factor):
         c["roty"][f]=(obj.rotation_euler[2]*180/pi)
         c["rotz"][f]=-1*(obj.rotation_euler[1]*180/pi)
 
-        dir =  mathutils.Vector((0, 0, -1)) * obj.matrix_world
+        dir =  mathutils.Vector((0, 0, -1))  * obj.matrix_world
 
-        c["targetx"][f]=dir[0]
-        c["targety"][f]=dir[1]
-        c["targetz"][f]=dir[2]
+        c["targetx"][f]=c["posx"][f]+dir[0]*100
+        c["targety"][f]=c["posy"][f]+dir[1]*100
+        c["targetz"][f]=c["posz"][f]+dir[2]*100
 
   
     writescript(filepath,c)
@@ -143,8 +143,8 @@ def writescript(filename,c):
         ixScript.write(' %f ] ' %c["posy"][frame])
 
         ixScript.write(', target: [ %f, ' %c["targetx"][frame] )
-        ixScript.write(' %f, ' %c["targety"][frame])
-        ixScript.write(' %f ] ' %c["targetz"][frame])
+        ixScript.write(' %f, ' %c["targetz"][frame])
+        ixScript.write(' %f ] ' %c["targety"][frame])
 
 
         if frame == endframe:
