@@ -52,6 +52,8 @@ def writeCameras(context, filepath, frame_start, frame_end, scaling_factor):
             print("Not camera")
             return
 
+    obj.rotation_mode = 'QUATERNION'
+
     frame_range = range(frame_start, frame_end + 1)
 
 #set up scene
@@ -83,17 +85,12 @@ def writeCameras(context, filepath, frame_start, frame_end, scaling_factor):
         c["posy"][f]=obj.location[2]*scaling_factor
         c["posz"][f]=obj.location[1]*scaling_factor
 
-        c["rotx"][f]=(obj.rotation_euler[0]*180/pi)-90
-        c["roty"][f]=(obj.rotation_euler[2]*180/pi)
-        c["rotz"][f]=-1*(obj.rotation_euler[1]*180/pi)
+        dir =  obj.rotation_quaternion * mathutils.Vector(( 0, 0 , -1))
 
-        dir =  mathutils.Vector((0, 0, -1))  * obj.matrix_world
+        c["targetx"][f]= c["posx"][f]+dir[0]*10
+        c["targety"][f]= c["posy"][f]+dir[2]*10
+        c["targetz"][f]= c["posz"][f]+dir[1]*10
 
-        c["targetx"][f]=c["posx"][f]+dir[0]*100
-        c["targety"][f]=c["posy"][f]+dir[1]*100
-        c["targetz"][f]=c["posz"][f]+dir[2]*100
-
-  
     writescript(filepath,c)
     return
 
@@ -122,7 +119,7 @@ def writescript(filename,c):
 
     ixScript.write("var iframe = document.getElementById( 'api-frame' );\n")
     ixScript.write("var version = '1.0.0';\n")
-    ixScript.write("var urlid = '26de2fb597c04085ba70c57b61c546d6';\n")
+    ixScript.write("var urlid = '5f6f8a6479ae4e45a9f863b8db624cd5';\n")
 
     ixScript.write("var client = new Sketchfab( version, iframe );\n")
 
@@ -132,8 +129,6 @@ def writescript(filename,c):
 
     ixScript.write("var success = function ( api ) {\n")
 
-    ixScript.write("var target = [ 0.0, 0.0, 1.0 ];\n")
-        
     ixScript.write("var cameraList = [ \n")
 
     for frame in range(int(startframe),int(endframe)+1):
@@ -191,7 +186,7 @@ from bpy_extras.io_utils import ExportHelper
 
 
 class CameraExporter(bpy.types.Operator, ExportHelper):
-    '''Save a python script which exports camera to Clarisse'''
+    '''Save a python script which exports camera to HTML'''
     bl_idname = "export_animation.cameras"
     bl_label = "Export Camera to Sketchfab Javascript"
 
